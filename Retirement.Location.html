@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envision! Plan your retirement now!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js for graphs -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://hips.hearstapps.com/hmg-prod/images/champagne-beach-espiritu-santo-island-vanuatu-royalty-free-image-1655672510.jpg?crop=0.668xw:1.00xh;0.167xw,0&resize=640:*') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+        }
+        nav {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        nav a {
+            color: #007BFF; /* Blue links */
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        nav a:hover {
+            color: #0056CC;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .table-container {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .form-group select, .form-group input {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .graphs {
+            margin-top: 30px;
+        }
+        .graph-container {
+            margin-bottom: 30px;
+            max-width: 600px; /* Reduced size for graphs */
+            margin: 0 auto; /* Center the graphs */
+        }
+        canvas {
+            max-width: 100%; /* Ensure graphs are responsive */
+            height: 300px; /* Adjust height for smaller graphs */
+        }
+    </style>
+</head>
+<body>
+    <header>Envision! Be independent, take control of your future!</header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="Retirement.Calculator.html">Retirement Calculator</a>
+        <a href="monthly_budget_calculator.html">Monthly Budget Calculator</a>
+        <a href="Retirement.Location.html">Retirement Location</a>
+        <a href="debt.repayment.html">Debt Repayment</a>
+        <a href="diy_investing.html">DIY Investing</a>
+        <a href="stocks.html">Stocks</a>
+        <a href="about_us.html">About Us</a>
+    </nav>
+    <div class="container">
+        <h2>Compare Retirement Locations</h2>
+        <p>Select a location and enter your expected retirement year to see the estimated cost of living adjusted for inflation.</p>
+        <div class="form-group">
+            <label for="location">Choose a location:</label>
+            <select id="location" onchange="updateLocationComparison()">
+                <option value="florida">Florida</option>
+                <option value="arizona">Arizona</option>
+                <option value="texas">Texas</option>
+                <option value="california">California</option>
+                <option value="north_carolina">North Carolina</option>
+                <option value="georgia">Georgia</option>
+                <option value="alabama">Alabama</option>
+                <option value="south_carolina">South Carolina</option>
+                <option value="mississippi">Mississippi</option>
+                <option value="louisiana">Louisiana</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="retirementYear">Expected Retirement Year:</label>
+            <input type="number" id="retirementYear" value="2030" min="2023" onchange="updateLocationComparison()">
+        </div>
+        <div class="table-container">
+            <table id="locationTable">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Cost ($/Month)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="graphs">
+            <div class="graph-container">
+                <canvas id="barChart"></canvas>
+            </div>
+            <div class="graph-container">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const locationData = {
+            florida: { housing: 1500, healthcare: 600, food: 500, transportation: 300, entertainment: 200, taxes: 100 },
+            arizona: { housing: 1400, healthcare: 550, food: 450, transportation: 250, entertainment: 180, taxes: 90 },
+            texas: { housing: 1300, healthcare: 500, food: 400, transportation: 200, entertainment: 150, taxes: 0 },
+            california: { housing: 2500, healthcare: 700, food: 600, transportation: 400, entertainment: 300, taxes: 200 },
+            north_carolina: { housing: 1200, healthcare: 500, food: 400, transportation: 200, entertainment: 150, taxes: 80 },
+            georgia: { housing: 1300, healthcare: 520, food: 420, transportation: 220, entertainment: 160, taxes: 70 },
+            alabama: { housing: 1100, healthcare: 480, food: 380, transportation: 180, entertainment: 140, taxes: 60 },
+            south_carolina: { housing: 1250, healthcare: 510, food: 410, transportation: 210, entertainment: 150, taxes: 75 },
+            mississippi: { housing: 1000, healthcare: 450, food: 350, transportation: 170, entertainment: 130, taxes: 50 },
+            louisiana: { housing: 1150, healthcare: 490, food: 390, transportation: 190, entertainment: 140, taxes: 65 }
+        };
+
+        const inflationRate = 0.03; // 3% annual inflation
+
+        function updateLocationComparison() {
+            const location = document.getElementById('location').value;
+            const retirementYear = parseInt(document.getElementById('retirementYear').value);
+            const currentYear = new Date().getFullYear();
+            const yearsToRetirement = retirementYear - currentYear;
+
+            const data = locationData[location];
+            const tableBody = document.getElementById('locationTable').querySelector('tbody');
+
+            // Clear existing rows
+            tableBody.innerHTML = '';
+
+            const adjustedData = {};
+            for (const [category, cost] of Object.entries(data)) {
+                const adjustedCost = cost * Math.pow(1 + inflationRate, yearsToRetirement);
+                adjustedData[category] = adjustedCost;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${capitalize(category)}</td>
+                    <td>$${adjustedCost.toFixed(2)}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+
+            updateGraphs(adjustedData);
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function updateGraphs(data) {
+            const categories = Object.keys(data);
+            const costs = Object.values(data);
+
+            // Bar Chart
+            const barChartCtx = document.getElementById('barChart').getContext('2d');
+            new Chart(barChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Cost ($/Month)',
+                        data: costs,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Pie Chart
+            const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+            new Chart(pieChartCtx, {
+                type: 'pie',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        data: costs,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+
+        // Initialize with default location
+        window.onload = () => {
+            updateLocationComparison();
+        };
+    </script>
+</body>
+</html>

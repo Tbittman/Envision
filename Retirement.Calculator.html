@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envision! Plan your retirement now!</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDF8fGJlYWNoJTIwcmVsYXh8ZW58MHx8fHwxNjkzNzY1NTYz&ixlib=rb-1.2.1&q=80&w=1920') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+        header {
+            background: #FFFFFF; /* White background */
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+        }
+        nav {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        nav a {
+            color: #333;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        nav a:hover {
+            color: #007BFF;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .form-group input {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 300px;
+            transition: box-shadow 0.3s ease;
+        }
+        .form-group input:focus {
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #0056CC;
+            transform: scale(1.05);
+        }
+        .results {
+            margin-top: 20px;
+        }
+        #chart-container {
+            margin-top: 30px;
+        }
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .form-container .form-group {
+            flex: 1 1 calc(50% - 20px);
+        }
+        .details {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .comfort-levels {
+            margin-top: 20px;
+        }
+        .comfort-level {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .motivation {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #007BFF;
+            text-align: center;
+        }
+        .retirement-table {
+            margin-top: 30px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .retirement-table th, .retirement-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .retirement-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+        .social-security {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>Envision! Be independent, take control of your future!</header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="Retirement.Calculator.html">Retirement Calculator</a>
+        <a href="monthly_budget_calculator.html">Monthly Budget Calculator</a>
+        <a href="Retirement.Location.html">Retirement Location</a>
+        <a href="debt.repayment.html">Debt Repayment</a>
+        <a href="diy_investing.html">DIY Investing</a>
+        <a href="stocks.html">stocks</a>
+        <a href="about_us.html">About Us</a>
+    </nav>
+    <div class="container">
+        <h2>Retirement Calculator</h2>
+        <div class="form-container">
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" value="30" min="0" oninput="updateRetirement()">
+            </div>
+            <div class="form-group">
+                <label for="annual_income">Annual Income ($):</label>
+                <input type="number" id="annual_income" value="50000" min="0" oninput="updateRetirement()">
+            </div>
+            <div class="form-group">
+                <label for="percentage_saved">Percentage Saved (%):</label>
+                <small>(Annually percentage saved compared to income)</small>
+                <input type="number" id="percentage_saved" value="5" min="0" oninput="updateRetirement()">
+            </div>
+            <div class="form-group">
+                <label for="investment_return">Annual Investment Return (%):</label>
+                <input type="number" id="investment_return" value="7" min="0" oninput="updateRetirement()">
+            </div>
+            <div class="form-group">
+                <label for="retirement_age">Retirement Age:</label>
+                <input type="number" id="retirement_age" value="65" min="0" oninput="updateRetirement()">
+            </div>
+            <div class="form-group">
+                <label for="current_savings">Current Savings ($):</label>
+                <input type="number" id="current_savings" value="10000" min="0" oninput="updateRetirement()">
+            </div>
+        </div>
+        <button onclick="shareGraph()">Share Graph</button>
+        <div class="results">
+            <h3>Total Savings at Retirement:</h3>
+            <p id="retirement_savings">$0</p>
+            <p id="retirement_status"></p>
+        </div>
+        <div id="chart-container">
+            <canvas id="retirementChart"></canvas>
+        </div>
+        <div class="details" id="details">
+            <!-- Detailed breakdown will be dynamically added here -->
+        </div>
+        <table class="retirement-table" id="retirementTable">
+            <!-- Retirement table will be dynamically added here -->
+        </table>
+        <div class="social-security">
+            <h4>Social Security Information:</h4>
+            <p>Social Security benefits can provide additional income during retirement. On average, retirees receive about $1,800 per month, or $21,600 annually. This amount may vary based on your earnings history and the age at which you start claiming benefits.</p>
+            <p>For more information, visit the <a href="https://www.ssa.gov" target="_blank">Social Security Administration</a>.</p>
+        </div>
+    </div>
+
+    <script>
+        let chart;
+
+        function updateRetirement() {
+            const currentYear = new Date().getFullYear();
+            const age = parseInt(document.getElementById('age').value);
+            const annualIncome = parseFloat(document.getElementById('annual_income').value);
+            const percentageSaved = parseFloat(document.getElementById('percentage_saved').value);
+            const investmentReturn = parseFloat(document.getElementById('investment_return').value) / 100;
+            const retirementAge = parseInt(document.getElementById('retirement_age').value);
+            const currentSavings = parseFloat(document.getElementById('current_savings').value);
+
+            const totalYears = retirementAge - age;
+            const retirementYear = currentYear + totalYears;
+            const annualContribution = (annualIncome * percentageSaved) / 100;
+
+            let totalSavings = currentSavings;
+            const yearlySavings = [totalSavings]; // Array to store savings for each year
+            for (let i = 1; i <= totalYears; i++) {
+                totalSavings = totalSavings * (1 + investmentReturn) + annualContribution;
+                yearlySavings.push(totalSavings);
+            }
+
+            document.getElementById('retirement_savings').innerText = `$${formatNumber(totalSavings.toFixed(2))}`;
+
+            // Update the chart
+            generateChart(yearlySavings, totalYears);
+
+            // Update the details section
+            updateDetails(totalSavings, retirementYear);
+
+            // Update the retirement table
+            updateRetirementTable(retirementYear);
+
+            // Update retirement status
+            updateRetirementStatus(totalSavings, retirementYear);
+        }
+
+        function generateChart(yearlySavings, totalYears) {
+            const ctx = document.getElementById('retirementChart').getContext('2d');
+            const labels = Array.from({ length: totalYears + 1 }, (_, i) => `Year ${i}`);
+            const data = {
+                labels: labels,
+                datasets: [{
+                    label: 'Savings Over Time ($)',
+                    data: yearlySavings,
+                    backgroundColor: 'rgba(30, 144, 255, 0.5)',
+                    borderColor: 'rgba(30, 144, 255, 1)',
+                    borderWidth: 1
+                }]
+            };
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Years Until Retirement'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Savings ($)'
+                            },
+                            beginAtZero: true
+                        }
+                    },
+                    animation: {
+                        duration: 1000, // Smooth animation for the chart
+                        easing: 'easeOutBounce'
+                    }
+                }
+            };
+
+            if (chart) {
+                chart.destroy(); // Destroy the previous chart instance
+            }
+            chart = new Chart(ctx, config);
+        }
+
+        function updateDetails(totalSavings, retirementYear) {
+            const inflationRate = 0.03; // Assume 3% annual inflation
+            const basicRange = formatNumber(adjustForInflation(500000, retirementYear, inflationRate)) + ' - ' + formatNumber(adjustForInflation(1000000, retirementYear, inflationRate));
+            const comfortableRange = formatNumber(adjustForInflation(1000000, retirementYear, inflationRate)) + ' - ' + formatNumber(adjustForInflation(2000000, retirementYear, inflationRate));
+            const luxuriousRange = formatNumber(adjustForInflation(2000000, retirementYear, inflationRate)) + '+';
+
+            const details = document.getElementById('details');
+            const comfortLevels = `
+                <div class="comfort-levels">
+                    <h3>Comfort Level in ${retirementYear}:</h3>
+                    <div class="comfort-level">Basic: $${basicRange}</div>
+                    <div class="comfort-level">Comfortable: $${comfortableRange}</div>
+                    <div class="comfort-level">Luxurious: $${luxuriousRange}</div>
+                </div>
+            `;
+
+            const motivation = `
+                <div class="motivation">
+                    <p>Start saving now! The earlier you start, the more time your money has to grow.</p>
+                </div>
+            `;
+
+            details.innerHTML = `
+                <h3>Detailed Breakdown:</h3>
+                <p>Total Savings at Retirement: $${formatNumber(totalSavings.toFixed(2))}</p>
+                ${comfortLevels}
+                ${motivation}
+            `;
+        }
+
+        function updateRetirementTable(retirementYear) {
+            const inflationRate = 0.03; // Assume 3% annual inflation
+            const table = document.getElementById('retirementTable');
+            const data = [
+                { year: 1925 },
+                { year: 1935 },
+                { year: 1945 },
+                { year: 1955 },
+                { year: 1965 },
+                { year: 1975 },
+                { year: 1985 },
+                { year: 1995 },
+                { year: 2005 },
+                { year: 2015 },
+                { year: 2025 },
+                { year: 2035 },
+                { year: 2045 },
+                { year: 2055 },
+                { year: 2065 },
+                { year: 2075 },
+                { year: 2085 },
+                { year: 2095 },
+                { year: 2105 },
+                { year: 2115 },
+                { year: 2125 }
+            ];
+
+            let tableHTML = `
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Basic ($)</th>
+                        <th>Comfortable ($)</th>
+                        <th>Luxurious ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            data.forEach(row => {
+                const basic = formatNumber(adjustForInflation(500000, row.year, inflationRate)) + ' - ' + formatNumber(adjustForInflation(1000000, row.year, inflationRate));
+                const comfortable = formatNumber(adjustForInflation(1000000, row.year, inflationRate)) + ' - ' + formatNumber(adjustForInflation(2000000, row.year, inflationRate));
+                const luxurious = formatNumber(adjustForInflation(2000000, row.year, inflationRate)) + '+';
+
+                tableHTML += `
+                    <tr>
+                        <td>${row.year}</td>
+                        <td>${basic}</td>
+                        <td>${comfortable}</td>
+                        <td>${luxurious}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody>';
+            table.innerHTML = tableHTML;
+        }
+
+        function updateRetirementStatus(totalSavings, retirementYear) {
+            const inflationRate = 0.03; // Assume 3% annual inflation
+            const basicNeeded = adjustForInflation(500000, retirementYear, inflationRate);
+            const comfortableNeeded = adjustForInflation(1000000, retirementYear, inflationRate);
+
+            const status = document.getElementById('retirement_status');
+            if (totalSavings >= comfortableNeeded) {
+                status.innerText = "You are on track for a comfortable or luxurious retirement!";
+                status.style.color = "green";
+            } else if (totalSavings >= basicNeeded) {
+                status.innerText = "You are on track for a basic retirement, but consider saving more for comfort.";
+                status.style.color = "orange";
+            } else {
+                status.innerText = "You may not have enough savings for retirement. Consider increasing your contributions.";
+                status.style.color = "red";
+            }
+        }
+
+        function adjustForInflation(amount, targetYear, inflationRate) {
+            const currentYear = new Date().getFullYear();
+            const years = targetYear - currentYear;
+            return (amount * Math.pow(1 + inflationRate, years)).toFixed(2);
+        }
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Initialize the chart and table on page load
+        window.onload = () => {
+            updateRetirement();
+            updateRetirementTable(new Date().getFullYear() + (65 - 30)); // Default retirement year
+        };
+        
+    </script>
+     </div>
+     <div class="equation">
+         <h4>Equation Used:</h4>
+         <p>
+             Total Savings = Current Savings × (1 + Investment Return Rate)<sup>Years</sup> + (Annual Contribution × ((1 + Investment Return Rate)<sup>Years</sup> - 1) / Investment Return Rate)
+         </p>
+         <p>
+             This equation is iterated yearly to calculate the total savings at retirement.
+         </p>
+     </div>
+    </script>
+</body>
+</html>

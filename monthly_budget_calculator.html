@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Budget Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://images.unsplash.com/photo-1495954484750-af469f2f9be5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fHN1bnJpc2V8ZW58MHx8fHwxNjkzNzY1NTYz&ixlib=rb-1.2.1&q=80&w=1920') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+        }
+        nav {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        nav a {
+            color: #333;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        nav a:hover {
+            color: #007BFF;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.85); /* Increased transparency */
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .form-column {
+            flex: 1 1 calc(33.33% - 20px);
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .form-group input {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            transition: box-shadow 0.3s ease;
+        }
+        .form-group input:focus {
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #0056CC;
+            transform: scale(1.05);
+        }
+        #chart-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            text-align: center;
+        }
+        #budgetChart, #categoryChart, #incomeExpenseChart {
+            max-width: 400px;
+            max-height: 400px;
+        }
+        .leftover-budget {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>Envision! Be independent, take control of your future!</header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="Retirement.Calculator.html">Retirement Calculator</a>
+        <a href="monthly_budget_calculator.html">Monthly Budget Calculator</a>
+        <a href="Retirement.Location.html">Retirement Location</a>
+        <a href="debt.repayment.html">Debt Repayment</a>
+        <a href="diy_investing.html">DIY Investing</a>
+        <a href="stocks.html">Stocks</a>
+        <a href="about_us.html">About Us</a>
+    </nav>
+    <div class="container">
+        <h2>Welcome to the Monthly Budget Calculator</h2>
+        <p>Enter your monthly income and expenses to see a breakdown of your budget.</p>
+        <div class="form-container">
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="monthly_income">Monthly Income ($):</label>
+                    <input type="number" id="monthly_income" value="5000" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="tax_rate">Tax Rate (%):</label>
+                    <input type="number" id="tax_rate" value="20" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="savings">Savings ($):</label>
+                    <input type="number" id="savings" value="500" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="food">Food ($):</label>
+                    <input type="number" id="food" value="400" min="0">
+                </div>
+            </div>
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="rent">Rent ($):</label>
+                    <input type="number" id="rent" value="1200" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="subscriptions">Subscriptions ($):</label>
+                    <input type="number" id="subscriptions" value="100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone ($):</label>
+                    <input type="number" id="phone" value="50" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="insurance">Insurance ($):</label>
+                    <input type="number" id="insurance" value="200" min="0">
+                </div>
+            </div>
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="internet">Internet ($):</label>
+                    <input type="number" id="internet" value="60" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="utilities">Utilities ($):</label>
+                    <input type="number" id="utilities" value="150" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="going_out">Going Out ($):</label>
+                    <input type="number" id="going_out" value="300" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="gas">Gas ($):</label>
+                    <input type="number" id="gas" value="100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="other">Other ($):</label>
+                    <input type="number" id="other" value="200" min="0">
+                </div>
+            </div>
+        </div>
+        <button onclick="calculateBudget()">Calculate Budget</button>
+        <div class="leftover-budget" id="leftover_budget">Leftover Budget: $0</div>
+        <div id="chart-container">
+            <canvas id="categoryChart"></canvas>
+            <canvas id="budgetChart"></canvas>
+            <canvas id="incomeExpenseChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let budgetChart, categoryChart, incomeExpenseChart;
+
+        function calculateBudget() {
+            const monthlyIncome = parseFloat(document.getElementById('monthly_income').value);
+            const taxRate = parseFloat(document.getElementById('tax_rate').value) / 100;
+            const savings = parseFloat(document.getElementById('savings').value);
+            const food = parseFloat(document.getElementById('food').value);
+            const rent = parseFloat(document.getElementById('rent').value);
+            const subscriptions = parseFloat(document.getElementById('subscriptions').value);
+            const phone = parseFloat(document.getElementById('phone').value);
+            const insurance = parseFloat(document.getElementById('insurance').value);
+            const internet = parseFloat(document.getElementById('internet').value);
+            const utilities = parseFloat(document.getElementById('utilities').value);
+            const goingOut = parseFloat(document.getElementById('going_out').value);
+            const gas = parseFloat(document.getElementById('gas').value);
+            const other = parseFloat(document.getElementById('other').value);
+
+            const tax = monthlyIncome * taxRate;
+            const totalExpenses = tax + savings + food + rent + subscriptions + phone + insurance + internet + utilities + goingOut + gas + other;
+            const leftoverBudget = monthlyIncome - totalExpenses;
+
+            document.getElementById('leftover_budget').innerText = `Leftover Budget: $${leftoverBudget.toFixed(2)}`;
+
+            // Pie Chart for Expense Breakdown
+            const pieData = {
+                labels: ['Tax', 'Savings', 'Food', 'Rent', 'Subscriptions', 'Phone', 'Insurance', 'Internet', 'Utilities', 'Going Out', 'Gas', 'Other'],
+                datasets: [{
+                    data: [tax, savings, food, rent, subscriptions, phone, insurance, internet, utilities, goingOut, gas, other],
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                    ],
+                }]
+            };
+
+            if (budgetChart) budgetChart.destroy();
+            const pieCtx = document.getElementById('budgetChart').getContext('2d');
+            budgetChart = new Chart(pieCtx, {
+                type: 'pie',
+                data: pieData,
+            });
+
+            // Bar Chart for Category Percentages
+            const categoryData = {
+                labels: ['Tax', 'Savings', 'Food', 'Rent', 'Subscriptions', 'Phone', 'Insurance', 'Internet', 'Utilities', 'Going Out', 'Gas', 'Other'],
+                datasets: [{
+                    label: 'Percentage of Income',
+                    data: [
+                        (tax / monthlyIncome) * 100,
+                        (savings / monthlyIncome) * 100,
+                        (food / monthlyIncome) * 100,
+                        (rent / monthlyIncome) * 100,
+                        (subscriptions / monthlyIncome) * 100,
+                        (phone / monthlyIncome) * 100,
+                        (insurance / monthlyIncome) * 100,
+                        (internet / monthlyIncome) * 100,
+                        (utilities / monthlyIncome) * 100,
+                        (goingOut / monthlyIncome) * 100,
+                        (gas / monthlyIncome) * 100,
+                        (other / monthlyIncome) * 100,
+                    ],
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                    ],
+                }]
+            };
+
+            if (categoryChart) categoryChart.destroy();
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            categoryChart = new Chart(categoryCtx, {
+                type: 'bar',
+                data: categoryData,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Percentage (%)',
+                            },
+                        },
+                    },
+                },
+            });
+
+            // Bar Chart for Income vs. Expenses
+            const incomeExpenseData = {
+                labels: ['Income', 'Expenses'],
+                datasets: [{
+                    label: 'Amount ($)',
+                    data: [monthlyIncome, totalExpenses],
+                    backgroundColor: ['#36A2EB', '#FF6384'],
+                }]
+            };
+
+            if (incomeExpenseChart) incomeExpenseChart.destroy();
+            const incomeExpenseCtx = document.getElementById('incomeExpenseChart').getContext('2d');
+            incomeExpenseChart = new Chart(incomeExpenseCtx, {
+                type: 'bar',
+                data: incomeExpenseData,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount ($)',
+                            },
+                        },
+                    },
+                },
+            });
+        }
+    </script>
+</body>
+</html>
